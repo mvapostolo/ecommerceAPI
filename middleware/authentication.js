@@ -1,34 +1,35 @@
-const CustomError = require('../errors')
-const { isTokenValid } = require('../utils')
+const CustomError = require("../errors");
+const { isTokenValid } = require("../utils");
 
 const authenticateUser = async (req, res, next) => {
-  const token = req.signedCookies.token
+  const token = req.signedCookies.token;
 
   if (!token) {
-    throw new CustomError.UnauthenticatedError('Authentication invalid! Something went wrong.')
+    throw new CustomError.UnauthenticatedError(
+      "Authentication invalid! Something went wrong."
+    );
   }
 
   try {
-    const { name, userId, role } = isTokenValid({ token })
-    req.user = { name, userId, role }
+    const { name, userId, role } = isTokenValid({ token });
+    req.user = { name, userId, role };
     next();
   } catch (error) {
-    throw new CustomError.UnauthenticatedError('Authentication invalid! Something went wrong.')
+    throw new CustomError.UnauthenticatedError(
+      "Authentication invalid! Something went wrong."
+    );
   }
-}
+};
 
 const authorizePermissions = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       throw new CustomError.UnauthorizedError(
-        'Unauthorized to access this route'
-      )
+        "Unauthorized to access this route."
+      );
     }
-    next()
-  }
-}
-
-module.exports = {
-  authenticateUser,
-  authorizePermissions,
+    next();
+  };
 };
+
+module.exports = { authenticateUser, authorizePermissions };
